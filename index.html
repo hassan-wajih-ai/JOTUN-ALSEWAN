@@ -149,6 +149,24 @@
       }
     }
 
+
+    /* 3D Room Visualizer Perspective & Lighting Styles */
+    .room-3d-stage {
+      perspective: 1400px;
+      transform-style: preserve-3d;
+    }
+    .room-3d-canvas-wrap {
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .wall-transition {
+      transition: fill 0.35s ease, stop-color 0.35s ease;
+    }
+    .surface-zone-active {
+      outline: 2px dashed #F5A800;
+    }
+
   </style>
 </head>
 <body class="bg-white text-slate-800 antialiased selection:bg-amber-100 selection:text-amber-900 pb-20 md:pb-0">
@@ -604,6 +622,765 @@
         <!-- Step 3: Compact Selected Color Detail Card (تظهر عند الضغط على الكود) -->
         <div id="selectedColorCardContainer" class="hidden mt-3 pt-3 border-t border-amber-200/80">
           <!-- Selected single color detail rendered here via JS -->
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  
+  <!-- NEW SECTION: استوديو التصميم الهندسي والمعماري ثلاثي الأبعاد المتقدم (Advanced Architectural & Engineering 3D BIM Color Studio) -->
+  <section id="room-visualizer" class="py-12 md:py-20 bg-gradient-to-b from-slate-100/80 via-white to-amber-50/40 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Engineering Studio Header -->
+      <div class="text-center max-w-4xl mx-auto mb-8">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-jotunBlue text-jotunYellow text-xs font-black shadow-md mb-3 border border-amber-400/40">
+          <span>📐🏛️</span>
+          <span>نظام المحاكاة الهندسي والمعماري ثلاثي الأبعاد (3D Architectural BIM & Raytraced Lighting Studio)</span>
+        </div>
+        <h2 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+          استوديو التصميم الهندسي وتجربة ألوان جوتن ثلاثي الأبعاد (3D)
+        </h2>
+        <p class="text-slate-600 text-xs sm:text-base mt-2 leading-relaxed">
+          محاكاة معمارية وهندسية دقيقة بالمنظور ثلاثي الأبعاد مع إضاءة <span class="font-bold text-jotunBlue">IES Spotlights</span>، ومحاكاة ملمس الدهان الحقيقي (<span class="font-bold text-emerald-700">فينوماستيك مطفي/حريري وجوتاشيلد تيكس/كانڤا</span>)، وإظهار الأبعاد الهندسية وحساب كميات الدهان لكل جدار، مع ميزة المقارنة النصفية بين لونين (Before / After).
+        </p>
+      </div>
+
+      <!-- Main Engineering 3D Workspace Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- =============================================================== -->
+        <!-- RIGHT / START COLUMN (8 Cols on LG): 3D ARCHITECTURAL VIEWPORT -->
+        <!-- =============================================================== -->
+        <div class="lg:col-span-8 space-y-3.5">
+
+          <!-- Top Engineering Control Ribbon (شريط الأدوات الهندسية والمشاهد 3D) -->
+          <div class="bg-white rounded-2xl p-3 border-2 border-slate-200 shadow-sm space-y-2.5">
+            <!-- Row 1: 4 Architectural Scenes + CAD Blueprint Toggle + Split Compare Toggle -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[11px] font-black text-slate-500 ml-1">📐 المشهد المعماري:</span>
+                <button type="button" onclick="set3DScene('living')" id="sceneBtn-living" class="px-3 py-1.5 rounded-xl text-xs font-black bg-jotunBlue text-white shadow-xs transition-all cursor-pointer">
+                  🛋️ صالة فيلا مودرن 3D
+                </button>
+                <button type="button" onclick="set3DScene('bedroom')" id="sceneBtn-bedroom" class="px-3 py-1.5 rounded-xl text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all cursor-pointer">
+                  🛏️ جناح نوم فندقي 3D
+                </button>
+                <button type="button" onclick="set3DScene('office')" id="sceneBtn-office" class="px-3 py-1.5 rounded-xl text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all cursor-pointer">
+                  🏢 مكتب هندسي / عيادة 3D
+                </button>
+                <button type="button" onclick="set3DScene('villa')" id="sceneBtn-villa" class="px-3 py-1.5 rounded-xl text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all cursor-pointer">
+                  🏛️ واجهة فيلا جوتاشيلد 3D
+                </button>
+              </div>
+
+              <!-- Engineering Overlay Toggles -->
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" onclick="toggleCADOverlay()" id="cadToggleBtn" class="px-3 py-1.5 rounded-xl text-xs font-black bg-amber-100 text-jotunBlue border border-amber-300 transition-all cursor-pointer flex items-center gap-1">
+                  <span>📏 الأبعاد الهندسية (CAD): مفعّل</span>
+                </button>
+                <button type="button" onclick="toggleSplitCompareMode()" id="splitCompareBtn" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 transition-all cursor-pointer flex items-center gap-1">
+                  <span>⚖️ مقارنة لونين (Split)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 2: Surface Target Selection + Paint Finish Texture + Lighting Temperature -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <!-- Target Surface -->
+              <div class="flex flex-wrap items-center gap-1">
+                <span class="text-[11px] font-black text-jotunBlue ml-1">🖌️ السطح المحدد:</span>
+                <button type="button" onclick="setActive3DWall('main')" id="wallBtn-main" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-jotunBlue text-white shadow-2xs transition-all cursor-pointer ring-2 ring-amber-300">
+                  🎯 الجدار الرئيسي (A)
+                </button>
+                <button type="button" onclick="setActive3DWall('side')" id="wallBtn-side" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition-all cursor-pointer">
+                  🧱 الجدران الجانبية (B)
+                </button>
+                <button type="button" onclick="setActive3DWall('trim')" id="wallBtn-trim" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition-all cursor-pointer">
+                  🖼️ البانوهات والكرانيش (C)
+                </button>
+                <button type="button" onclick="setActive3DWall('ceiling')" id="wallBtn-ceiling" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition-all cursor-pointer">
+                  ⬆️ السقف والجبس (D)
+                </button>
+                <button type="button" onclick="setActive3DWall('all')" id="wallBtn-all" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 transition-all cursor-pointer">
+                  ✨ الكل
+                </button>
+              </div>
+
+              <!-- Paint Texture & Sheen Selector -->
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[11px] font-black text-slate-500">الملمس:</span>
+                <select id="paintFinishSelect" onchange="set3DPaintFinish(this.value)" class="px-2.5 py-1 rounded-lg text-[11px] font-black bg-slate-50 border border-slate-300 text-slate-800 focus:outline-none cursor-pointer">
+                  <option value="matt">فينوماستيك غني مطفي (Rich Matt)</option>
+                  <option value="silk">فينوماستيك ناعم حريري (Smooth Silk)</option>
+                  <option value="tex">جوتاشيلد تيكس رشة بارزة (Tex 3D)</option>
+                  <option value="kanva">جوتاشيلد كانڤا ملمس صخري (Kanva)</option>
+                </select>
+
+                <!-- Lighting Mode -->
+                <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                  <button type="button" onclick="set3DLighting('day')" id="lightBtn-day" class="px-2 py-1 rounded-md text-[10px] font-black bg-amber-400 text-jotunBlue cursor-pointer" title="إضاءة نهارية 5500K">☀️ 5500K</button>
+                  <button type="button" onclick="set3DLighting('warm')" id="lightBtn-warm" class="px-2 py-1 rounded-md text-[10px] font-bold text-slate-600 cursor-pointer" title="إضاءة دافئة 3000K">💡 3000K</button>
+                  <button type="button" onclick="set3DLighting('night')" id="lightBtn-night" class="px-2 py-1 rounded-md text-[10px] font-bold text-slate-600 cursor-pointer" title="إضاءة ليلية سبوت لايت">🌙 ليلي</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =============================================================== -->
+          <!-- THE 3D ARCHITECTURAL VIEWPORT STAGE (المسرح الهندسي ثلاثي الأبعاد) -->
+          <!-- =============================================================== -->
+          <div class="room-3d-stage relative rounded-3xl overflow-hidden bg-slate-950 border-4 border-white shadow-2xl">
+            <div id="room3DViewport" class="room-3d-canvas-wrap relative w-full aspect-[16/10] select-none overflow-hidden">
+
+              <!-- ======================================================= -->
+              <!-- SCENE 1: MODERN LUXURY VILLA LIVING & MAJLIS (3D RAYTRACED STYLE) -->
+              <!-- ======================================================= -->
+              <svg id="svgScene-living" viewBox="0 0 1200 750" class="w-full h-full block" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <!-- Procedural 3D Paint Surface Bump Textures (Tex & Kanva) -->
+                  <filter id="texFilter-tex" x="0%" y="0%" width="100%" height="100%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise"/>
+                    <feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="1.2" result="texLight">
+                      <feDistantLight azimuth="45" elevation="62"/>
+                    </feDiffuseLighting>
+                    <feComposite in="SourceGraphic" in2="texLight" operator="arithmetic" k1="0.85" k2="0.22" k3="0" k4="0"/>
+                  </filter>
+                  <filter id="texFilter-kanva" x="0%" y="0%" width="100%" height="100%">
+                    <feTurbulence type="turbulence" baseFrequency="0.25 0.45" numOctaves="4" result="noise"/>
+                    <feDiffuseLighting in="noise" lighting-color="#fffbeb" surfaceScale="1.8" result="texLight">
+                      <feDistantLight azimuth="60" elevation="55"/>
+                    </feDiffuseLighting>
+                    <feComposite in="SourceGraphic" in2="texLight" operator="arithmetic" k1="0.82" k2="0.25" k3="0" k4="0"/>
+                  </filter>
+
+                  <!-- Realistic Global Illumination (GI) & Ambient Occlusion (AO) Gradients -->
+                  <linearGradient id="giCeilingGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#000000" stop-opacity="0.22"/>
+                    <stop offset="50%" stop-color="#000000" stop-opacity="0.06"/>
+                    <stop offset="100%" stop-color="#000000" stop-opacity="0.16"/>
+                  </linearGradient>
+                  <linearGradient id="giLeftWallGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.24"/>
+                    <stop offset="75%" stop-color="#000000" stop-opacity="0.06"/>
+                    <stop offset="100%" stop-color="#000000" stop-opacity="0.32"/>
+                  </linearGradient>
+                  <linearGradient id="giRightWallGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#000000" stop-opacity="0.34"/>
+                    <stop offset="30%" stop-color="#000000" stop-opacity="0.12"/>
+                    <stop offset="100%" stop-color="#000000" stop-opacity="0.04"/>
+                  </linearGradient>
+                  <linearGradient id="giMainWallVert" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#000000" stop-opacity="0.24"/>
+                    <stop offset="12%" stop-color="#ffffff" stop-opacity="0.06"/>
+                    <stop offset="85%" stop-color="#000000" stop-opacity="0.05"/>
+                    <stop offset="100%" stop-color="#000000" stop-opacity="0.28"/>
+                  </linearGradient>
+
+                  <!-- IES Recessed Downlight Cones (مخاريط إضاءة السبوت لايت الواقعية) -->
+                  <radialGradient id="iesConeGrad" cx="50%" cy="0%" r="85%" fx="50%" fy="0%">
+                    <stop offset="0%" stop-color="#FFFBEB" stop-opacity="0.55"/>
+                    <stop offset="35%" stop-color="#FEF3C7" stop-opacity="0.22"/>
+                    <stop offset="100%" stop-color="#FEF3C7" stop-opacity="0.0"/>
+                  </radialGradient>
+
+                  <!-- Smooth Silk Specular Sheen Gradient -->
+                  <linearGradient id="silkSheenGrad" x1="15%" y1="0%" x2="85%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.0"/>
+                    <stop offset="45%" stop-color="#ffffff" stop-opacity="0.18"/>
+                    <stop offset="55%" stop-color="#ffffff" stop-opacity="0.24"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"/>
+                  </linearGradient>
+
+                  <!-- Herringbone Oak Parquet Floor Gradient -->
+                  <linearGradient id="oakFloorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#B89672"/>
+                    <stop offset="35%" stop-color="#CCA983"/>
+                    <stop offset="100%" stop-color="#8F6D4B"/>
+                  </linearGradient>
+
+                  <!-- Drop Shadows -->
+                  <filter id="aoShadowStrong" x="-15%" y="-15%" width="130%" height="130%">
+                    <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000000" flood-opacity="0.38"/>
+                  </filter>
+                  <filter id="aoShadowSoft" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#000000" flood-opacity="0.22"/>
+                  </filter>
+
+                  <!-- Split-Screen Comparison Clip Path -->
+                  <clipPath id="splitCompareClip">
+                    <rect id="splitClipRect" x="0" y="0" width="600" height="750"/>
+                  </clipPath>
+                </defs>
+
+                <!-- 1. ARCHITECTURAL GYPSUM CEILING WITH COVE LED & SHADOW GAPS (السقف الهندسي) -->
+                <g onclick="setActive3DWall('ceiling')" class="cursor-pointer">
+                  <!-- Outer Ceiling Perimeter -->
+                  <polygon id="living-ceiling" points="0,0 1200,0 970,130 230,130" fill="#F7F6F2" class="wall-transition"/>
+                  <polygon points="0,0 1200,0 970,130 230,130" fill="url(#giCeilingGrad)" pointer-events="none"/>
+                  <!-- Recessed Gypsum Coffers (بيت النور الهندسي الغاطس) -->
+                  <polygon points="110,12 1090,12 930,104 270,104" fill="#0F172A" opacity="0.18" pointer-events="none"/>
+                  <polygon id="living-ceiling-inner" points="130,18 1070,18 920,98 280,98" fill="#F7F6F2" class="wall-transition"/>
+                  <!-- Hidden Warm LED Strip Glow around Coffer -->
+                  <polygon points="125,16 1075,16 925,101 275,101" fill="none" stroke="#FDE047" stroke-width="5" opacity="0.85" pointer-events="none"/>
+                  <!-- 4 Architectural Trimless Double Spotlights -->
+                  <g pointer-events="none">
+                    <rect x="335" y="54" width="32" height="10" rx="3" fill="#0F172A"/>
+                    <circle cx="344" cy="59" r="3.5" fill="#FFFBEB"/>
+                    <circle cx="358" cy="59" r="3.5" fill="#FFFBEB"/>
+
+                    <rect x="515" y="54" width="32" height="10" rx="3" fill="#0F172A"/>
+                    <circle cx="524" cy="59" r="3.5" fill="#FFFBEB"/>
+                    <circle cx="538" cy="59" r="3.5" fill="#FFFBEB"/>
+
+                    <rect x="655" y="54" width="32" height="10" rx="3" fill="#0F172A"/>
+                    <circle cx="664" cy="59" r="3.5" fill="#FFFBEB"/>
+                    <circle cx="678" cy="59" r="3.5" fill="#FFFBEB"/>
+
+                    <rect x="835" y="54" width="32" height="10" rx="3" fill="#0F172A"/>
+                    <circle cx="844" cy="59" r="3.5" fill="#FFFBEB"/>
+                    <circle cx="858" cy="59" r="3.5" fill="#FFFBEB"/>
+                  </g>
+                </g>
+
+                <!-- 2. LEFT PERSPECTIVE WALL WITH FLOOR-TO-CEILING ALUMINUM CURTAIN WINDOW -->
+                <g onclick="setActive3DWall('side')" class="cursor-pointer">
+                  <polygon id="living-side-left" points="0,0 230,130 230,540 0,700" fill="#EAE6DF" class="wall-transition surface-paintable"/>
+                  <polygon points="0,0 230,130 230,540 0,700" fill="url(#giLeftWallGrad)" pointer-events="none"/>
+                  <!-- Architectural Curtain Wall Window (شباك بانوراما بارتفاع كامل) -->
+                  <polygon points="25,65 185,148 185,525 25,632" fill="#E0F2FE" stroke="#1E293B" stroke-width="7"/>
+                  <!-- Exterior Garden & Sky View through Window -->
+                  <polygon points="29,72 181,151 181,415 29,465" fill="#BAE6FD"/>
+                  <polygon points="29,465 181,415 181,521 29,626" fill="#86EFAC" opacity="0.6"/>
+                  <!-- Black Mullion Grid -->
+                  <line x1="112" y1="110" x2="112" y2="574" stroke="#1E293B" stroke-width="5"/>
+                  <line x1="25" y1="270" x2="185" y2="295" stroke="#1E293B" stroke-width="4"/>
+                  <line x1="25" y1="455" x2="185" y2="430" stroke="#1E293B" stroke-width="4"/>
+                  <!-- Sheer Curtain Drapery on Window Edge -->
+                  <polygon points="160,135 198,152 198,532 160,548" fill="#FFFFFF" opacity="0.72" pointer-events="none"/>
+                </g>
+
+                <!-- 3. RIGHT PERSPECTIVE WALL WITH ARCHITECTURAL NICHE & LED STRIP -->
+                <g onclick="setActive3DWall('side')" class="cursor-pointer">
+                  <polygon id="living-side-right" points="970,130 1200,0 1200,700 970,540" fill="#EAE6DF" class="wall-transition surface-paintable"/>
+                  <polygon points="970,130 1200,0 1200,700 970,540" fill="url(#giRightWallGrad)" pointer-events="none"/>
+                  <!-- Recessed Vertical Light Slot & Wood Slat Accent on Right Wall -->
+                  <polygon points="1030,155 1135,105 1135,565 1030,510" fill="#000000" opacity="0.16" pointer-events="none"/>
+                  <line x1="1032" y1="156" x2="1032" y2="510" stroke="#FDE047" stroke-width="3" opacity="0.85" pointer-events="none"/>
+                </g>
+
+                <!-- 4. MAIN ARCHITECTURAL FEATURE WALL (الجدار الرئيسي الخلفي) -->
+                <g onclick="setActive3DWall('main')" class="cursor-pointer">
+                  <rect id="living-main" x="230" y="130" width="740" height="410" fill="#B5C7D3" class="wall-transition surface-paintable"/>
+                  <!-- Compare Color B Layer (Visible only when Split Compare Mode is active) -->
+                  <g id="living-compare-group" class="hidden" clip-path="url(#splitCompareClip)">
+                    <rect id="living-main-compare" x="230" y="130" width="740" height="410" fill="#C8B9A6"/>
+                    <polygon id="living-side-left-compare" points="0,0 230,130 230,540 0,700" fill="#C8B9A6"/>
+                  </g>
+                  <!-- Realistic GI Vertical Shading + Silk Sheen Layer -->
+                  <rect x="230" y="130" width="740" height="410" fill="url(#giMainWallVert)" pointer-events="none"/>
+                  <rect id="living-silk-sheen" x="230" y="130" width="740" height="410" fill="url(#silkSheenGrad)" opacity="0.0" pointer-events="none"/>
+
+                  <!-- 4 Realistic Parabolic IES Spotlight Scallops on Main Wall -->
+                  <ellipse cx="350" cy="210" rx="75" ry="110" fill="url(#iesConeGrad)" pointer-events="none"/>
+                  <ellipse cx="530" cy="210" rx="75" ry="110" fill="url(#iesConeGrad)" pointer-events="none"/>
+                  <ellipse cx="670" cy="210" rx="75" ry="110" fill="url(#iesConeGrad)" pointer-events="none"/>
+                  <ellipse cx="850" cy="210" rx="75" ry="110" fill="url(#iesConeGrad)" pointer-events="none"/>
+                </g>
+
+                <!-- 5. ARCHITECTURAL BOISERIE MOLDINGS, FLUTED CLADDING & SHADOW-GAP BASEBOARD -->
+                <g onclick="setActive3DWall('trim')" class="cursor-pointer">
+                  <!-- Left Fluted Wood Cladding Accent Strip (بديل الخشب المعماري) -->
+                  <g pointer-events="none" opacity="0.92">
+                    <rect x="230" y="130" width="68" height="410" fill="#6E4E32"/>
+                    <line x1="240" y1="130" x2="240" y2="540" stroke="#3E2816" stroke-width="3"/>
+                    <line x1="250" y1="130" x2="250" y2="540" stroke="#3E2816" stroke-width="3"/>
+                    <line x1="260" y1="130" x2="260" y2="540" stroke="#3E2816" stroke-width="3"/>
+                    <line x1="270" y1="130" x2="270" y2="540" stroke="#3E2816" stroke-width="3"/>
+                    <line x1="280" y1="130" x2="280" y2="540" stroke="#3E2816" stroke-width="3"/>
+                    <line x1="290" y1="130" x2="290" y2="540" stroke="#3E2816" stroke-width="3"/>
+                  </g>
+
+                  <!-- Double Neoclassical Wall Boiserie Frames (البانوهات الهندسية المزدوجة) -->
+                  <rect id="living-trim-1" x="325" y="162" width="165" height="315" fill="none" stroke="#F7F6F2" stroke-width="5" class="wall-transition"/>
+                  <rect x="335" y="172" width="145" height="295" fill="none" stroke="#F7F6F2" stroke-width="2" opacity="0.75" pointer-events="none"/>
+
+                  <rect id="living-trim-2" x="515" y="162" width="230" height="315" fill="none" stroke="#F7F6F2" stroke-width="5" class="wall-transition"/>
+                  <rect x="525" y="172" width="210" height="295" fill="none" stroke="#F7F6F2" stroke-width="2" opacity="0.75" pointer-events="none"/>
+
+                  <rect id="living-trim-3" x="770" y="162" width="165" height="315" fill="none" stroke="#F7F6F2" stroke-width="5" class="wall-transition"/>
+                  <rect x="780" y="172" width="145" height="295" fill="none" stroke="#F7F6F2" stroke-width="2" opacity="0.75" pointer-events="none"/>
+
+                  <!-- Crown & Baseboard Moldings -->
+                  <rect id="living-trim-crown" x="230" y="124" width="740" height="8" fill="#F7F6F2" class="wall-transition"/>
+                  <rect id="living-trim-base" x="230" y="528" width="740" height="12" fill="#F7F6F2" class="wall-transition"/>
+                  <polygon id="living-trim-base-l" points="0,685 230,528 230,540 0,700" fill="#F7F6F2" class="wall-transition"/>
+                  <polygon id="living-trim-base-r" points="970,528 1200,685 1200,700 970,540" fill="#F7F6F2" class="wall-transition"/>
+                </g>
+
+                <!-- 6. HERRINGBONE PARQUET FLOOR, REFLECTION & WOVEN SILK CARPET -->
+                <g pointer-events="none">
+                  <polygon points="0,700 230,540 970,540 1200,700 1200,750 0,750" fill="url(#oakFloorGrad)"/>
+                  <!-- Perspective floor grid lines -->
+                  <line x1="230" y1="540" x2="70" y2="750" stroke="#5C4028" stroke-opacity="0.22" stroke-width="1.5"/>
+                  <line x1="360" y1="540" x2="260" y2="750" stroke="#5C4028" stroke-opacity="0.22" stroke-width="1.5"/>
+                  <line x1="480" y1="540" x2="430" y2="750" stroke="#5C4028" stroke-opacity="0.22" stroke-width="1.5"/>
+                  <line x1="600" y1="540" x2="600" y2="750" stroke="#5C4028" stroke-opacity="0.22" stroke-width="1.5"/>
+                  <line x1="720" y1="540" x2="770" y2="750" stroke="#5C4028" stroke-opacity="0.22" stroke-width="1.5"/>
+                  <line x1="840" y1="540" x2="940" y2="750" stroke="#5C4028" stroke-opacity="0.22" stroke-width="1.5"/>
+                  <line x1="970" y1="540" x2="1130" y2="750" stroke="#5C4028" stroke-opacity="0.22" stroke-width="1.5"/>
+
+                  <!-- Designer Area Rug in 3D Perspective -->
+                  <polygon points="165,725 295,575 905,575 1035,725" fill="#F4F1EA" stroke="#D6CFC2" stroke-width="4" filter="url(#aoShadowSoft)"/>
+                  <polygon points="205,712 315,588 885,588 995,712" fill="none" stroke="#C5B9A5" stroke-width="1.5" stroke-dasharray="10,5"/>
+                </g>
+
+                <!-- 7. ARCHITECTURAL ARTWORK, LINEAR SCONCES & DESIGNER ITALIAN SOFA (الأثاث المعماري 3D) -->
+                <g pointer-events="none" filter="url(#aoShadowStrong)">
+                  <!-- Minimalist Framed Relief Artwork in Center Boiserie -->
+                  <rect x="555" y="200" width="150" height="195" rx="2" fill="#FAF8F5" stroke="#D4AF37" stroke-width="4"/>
+                  <circle cx="630" cy="285" r="42" fill="none" stroke="#C28E5C" stroke-width="3"/>
+                  <path d="M575 355 Q630 295 685 355" fill="none" stroke="#0F172A" stroke-width="3"/>
+                  <!-- Linear Brass Wall Sconces with Warm Halo -->
+                  <ellipse cx="407" cy="285" rx="18" ry="55" fill="#FEF08A" opacity="0.32"/>
+                  <rect x="404" y="240" width="6" height="90" rx="3" fill="#D4AF37"/>
+                  <ellipse cx="852" cy="285" rx="18" ry="55" fill="#FEF08A" opacity="0.32"/>
+                  <rect x="849" y="240" width="6" height="90" rx="3" fill="#D4AF37"/>
+
+                  <!-- Italian Modular 3D Sofa (كنبة معمارية حديثة بأبعاد 3D) -->
+                  <!-- Deep Contact Shadow Under Sofa -->
+                  <ellipse cx="630" cy="592" rx="285" ry="18" fill="#000000" opacity="0.42"/>
+                  <!-- Sofa Back Structure -->
+                  <rect x="355" y="435" width="550" height="95" rx="16" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="2"/>
+                  <!-- 4 Backrest Cushions with 3D Shading -->
+                  <rect x="372" y="442" width="126" height="76" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5"/>
+                  <rect x="502" y="442" width="126" height="76" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5"/>
+                  <rect x="632" y="442" width="126" height="76" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5"/>
+                  <rect x="762" y="442" width="126" height="76" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.5"/>
+                  <!-- Accent Cushions -->
+                  <rect x="388" y="462" width="52" height="52" rx="10" transform="rotate(-7 414 488)" fill="#B45309"/>
+                  <rect x="432" y="470" width="46" height="46" rx="10" transform="rotate(5 455 493)" fill="#0F172A"/>
+                  <rect x="815" y="462" width="52" height="52" rx="10" transform="rotate(7 841 488)" fill="#B45309"/>
+                  <!-- Wide Low-Profile Armrests & Plinth Seat -->
+                  <rect x="320" y="482" width="42" height="98" rx="10" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="2"/>
+                  <rect x="898" y="482" width="42" height="98" rx="10" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="2"/>
+                  <rect x="355" y="512" width="550" height="68" rx="10" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="2"/>
+                  <line x1="538" y1="512" x2="538" y2="580" stroke="#CBD5E1" stroke-width="2"/>
+                  <line x1="722" y1="512" x2="722" y2="580" stroke="#CBD5E1" stroke-width="2"/>
+
+                  <!-- Travertine & Smoked Glass Coffee Table in Foreground -->
+                  <ellipse cx="630" cy="665" rx="165" ry="28" fill="#000000" opacity="0.3"/>
+                  <rect x="520" y="618" width="46" height="42" rx="6" fill="#D6CFC2" stroke="#B8AFA0" stroke-width="2"/>
+                  <rect x="690" y="618" width="46" height="42" rx="6" fill="#D6CFC2" stroke="#B8AFA0" stroke-width="2"/>
+                  <ellipse cx="630" cy="618" rx="155" ry="26" fill="#FAF8F5" stroke="#D4AF37" stroke-width="3"/>
+                  <!-- Architectural Coffee Table Books & Ceramic Vessel -->
+                  <polygon points="555,612 615,606 625,618 565,624" fill="#1E293B"/>
+                  <circle cx="675" cy="605" r="14" fill="#B45309"/>
+
+                  <!-- Designer Arch Floor Lamp on Right -->
+                  <path d="M965 575 L965 310 Q965 250 905 250" fill="none" stroke="#D4AF37" stroke-width="4"/>
+                  <ellipse cx="905" cy="255" rx="24" ry="12" fill="#FFFBEB" stroke="#D4AF37" stroke-width="2"/>
+
+                  <!-- Indoor Architectural Olive Tree in Ribbed Concrete Planter on Left -->
+                  <polygon points="240,505 292,505 282,578 250,578" fill="#E7E5E4" stroke="#A8A29E" stroke-width="2"/>
+                  <path d="M266 505 Q260 440 272 395" fill="none" stroke="#5C4028" stroke-width="6"/>
+                  <circle cx="268" cy="382" r="38" fill="#15803D"/>
+                  <circle cx="242" cy="405" r="28" fill="#166534"/>
+                  <circle cx="294" cy="402" r="28" fill="#16A34A"/>
+                </g>
+
+                <!-- 8. ARCHITECTURAL CAD / BIM ENGINEERING OVERLAY (الأبعاد والمناسيب الهندسية) -->
+                <g id="cadOverlay-living" pointer-events="none">
+                  <!-- Top Horizontal Wall Width Dimension Line -->
+                  <line x1="230" y1="146" x2="970" y2="146" stroke="#002855" stroke-width="1.8" stroke-dasharray="6,4"/>
+                  <polygon points="230,146 242,141 242,151" fill="#002855"/>
+                  <polygon points="970,146 958,141 958,151" fill="#002855"/>
+                  <rect x="515" y="134" width="170" height="24" rx="6" fill="#002855"/>
+                  <text id="cadText-width" x="600" y="150" text-anchor="middle" fill="#F5A800" font-size="12" font-weight="bold" font-family="Cairo, monospace">L = 5.00m (المساحة: 15.0 م²)</text>
+
+                  <!-- Right Vertical Ceiling Height Dimension Line -->
+                  <line x1="952" y1="130" x2="952" y2="540" stroke="#002855" stroke-width="1.8" stroke-dasharray="6,4"/>
+                  <polygon points="952,130 947,142 957,142" fill="#002855"/>
+                  <polygon points="952,540 947,528 957,528" fill="#002855"/>
+                  <rect x="862" y="322" width="84" height="24" rx="6" fill="#002855"/>
+                  <text id="cadText-height" x="904" y="338" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="bold" font-family="Cairo, monospace">H = 3.00m</text>
+
+                  <!-- Elevation Level Markers (مناسيب الارتفاع الهندسية) -->
+                  <g transform="translate(245, 518)">
+                    <polygon points="0,0 10,-12 20,0" fill="none" stroke="#002855" stroke-width="1.5"/>
+                    <text x="26" y="-2" fill="#002855" font-size="10" font-weight="bold" font-family="monospace">F.F.L ±0.00m</text>
+                  </g>
+                  <g transform="translate(245, 122)">
+                    <polygon points="0,-12 10,0 20,-12" fill="none" stroke="#002855" stroke-width="1.5"/>
+                    <text x="26" y="-2" fill="#002855" font-size="10" font-weight="bold" font-family="monospace">C.L +3.00m</text>
+                  </g>
+
+                  <!-- Surface Zone Engineering Tags (A, B, C, D) -->
+                  <circle cx="630" cy="182" r="13" fill="#F5A800" stroke="#002855" stroke-width="2"/>
+                  <text x="630" y="187" text-anchor="middle" fill="#002855" font-size="12" font-weight="black">A</text>
+
+                  <circle cx="998" cy="280" r="13" fill="#FFFFFF" stroke="#002855" stroke-width="2"/>
+                  <text x="998" y="285" text-anchor="middle" fill="#002855" font-size="12" font-weight="black">B</text>
+
+                  <circle cx="488" cy="240" r="12" fill="#FFFFFF" stroke="#002855" stroke-width="2"/>
+                  <text x="488" y="244" text-anchor="middle" fill="#002855" font-size="11" font-weight="black">C</text>
+
+                  <circle cx="600" cy="45" r="12" fill="#FFFFFF" stroke="#002855" stroke-width="2"/>
+                  <text x="600" y="49" text-anchor="middle" fill="#002855" font-size="11" font-weight="black">D</text>
+                </g>
+
+                <!-- 9. SPLIT COMPARE DIVIDER LINE -->
+                <g id="splitCompareDividerLine" class="hidden" pointer-events="none">
+                  <line id="svgSplitLine" x1="600" y1="0" x2="600" y2="750" stroke="#F5A800" stroke-width="4"/>
+                  <circle id="svgSplitHandle" cx="600" cy="340" r="20" fill="#002855" stroke="#F5A800" stroke-width="3"/>
+                  <text id="svgSplitHandleTxt" x="600" y="345" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="bold">↔</text>
+                </g>
+
+                <!-- 10. LIGHTING AMBIENCE OVERLAY -->
+                <rect id="living-lighting-overlay" x="0" y="0" width="1200" height="750" fill="#FEF08A" opacity="0.0" pointer-events="none" style="mix-blend-mode: multiply; transition: opacity 0.4s ease, fill 0.4s ease;"/>
+              </svg>
+
+              <!-- ======================================================= -->
+              <!-- SCENE 2: LUXURY HOTEL MASTER BEDROOM SUITE 3D           -->
+              <!-- ======================================================= -->
+              <svg id="svgScene-bedroom" viewBox="0 0 1200 750" class="w-full h-full hidden" xmlns="http://www.w3.org/2000/svg">
+                <g onclick="setActive3DWall('ceiling')" class="cursor-pointer">
+                  <polygon id="bedroom-ceiling" points="0,0 1200,0 980,125 220,125" fill="#F7F6F2" class="wall-transition"/>
+                  <polygon points="0,0 1200,0 980,125 220,125" fill="url(#giCeilingGrad)" pointer-events="none"/>
+                  <polygon points="150,18 1050,18 930,96 270,96" fill="none" stroke="#FDE047" stroke-width="4" opacity="0.85" pointer-events="none"/>
+                </g>
+                <g onclick="setActive3DWall('side')" class="cursor-pointer">
+                  <polygon id="bedroom-side-left" points="0,0 220,125 220,545 0,705" fill="#EAE6DF" class="wall-transition surface-paintable"/>
+                  <polygon points="0,0 220,125 220,545 0,705" fill="url(#giLeftWallGrad)" pointer-events="none"/>
+                  <polygon id="bedroom-side-right" points="980,125 1200,0 1200,705 980,545" fill="#EAE6DF" class="wall-transition surface-paintable"/>
+                  <polygon points="980,125 1200,0 1200,705 980,545" fill="url(#giRightWallGrad)" pointer-events="none"/>
+                </g>
+                <g onclick="setActive3DWall('main')" class="cursor-pointer">
+                  <rect id="bedroom-main" x="220" y="125" width="760" height="420" fill="#95A3A6" class="wall-transition surface-paintable"/>
+                  <rect x="220" y="125" width="760" height="420" fill="url(#giMainWallVert)" pointer-events="none"/>
+                  <ellipse cx="340" cy="220" rx="85" ry="125" fill="url(#iesConeGrad)" pointer-events="none"/>
+                  <ellipse cx="600" cy="220" rx="95" ry="125" fill="url(#iesConeGrad)" pointer-events="none"/>
+                  <ellipse cx="860" cy="220" rx="85" ry="125" fill="url(#iesConeGrad)" pointer-events="none"/>
+                </g>
+                <g onclick="setActive3DWall('trim')" class="cursor-pointer">
+                  <rect id="bedroom-trim-1" x="255" y="155" width="155" height="335" fill="none" stroke="#F7F6F2" stroke-width="5" class="wall-transition"/>
+                  <rect id="bedroom-trim-2" x="435" y="155" width="330" height="225" fill="none" stroke="#F7F6F2" stroke-width="5" class="wall-transition"/>
+                  <rect id="bedroom-trim-3" x="790" y="155" width="155" height="335" fill="none" stroke="#F7F6F2" stroke-width="5" class="wall-transition"/>
+                </g>
+                <polygon points="0,705 220,545 980,545 1200,705 1200,750 0,750" fill="url(#oakFloorGrad)" pointer-events="none"/>
+                <polygon points="160,735 280,580 920,580 1040,735" fill="#EDE9E3" stroke="#D5CFC7" stroke-width="4" pointer-events="none"/>
+                <g pointer-events="none" filter="url(#aoShadowStrong)">
+                  <!-- Hanging Designer Pendant Lights -->
+                  <line x1="330" y1="80" x2="330" y2="355" stroke="#D4AF37" stroke-width="3"/>
+                  <circle cx="330" cy="368" r="16" fill="#FFFBEB" stroke="#D4AF37" stroke-width="3"/>
+                  <line x1="870" y1="80" x2="870" y2="355" stroke="#D4AF37" stroke-width="3"/>
+                  <circle cx="870" cy="368" r="16" fill="#FFFBEB" stroke="#D4AF37" stroke-width="3"/>
+                  <!-- Channel-Tufted King Headboard -->
+                  <rect x="395" y="365" width="410" height="140" rx="14" fill="#CBD5E1" stroke="#94A3B8" stroke-width="2"/>
+                  <line x1="463" y1="365" x2="463" y2="505" stroke="#94A3B8" stroke-width="2"/>
+                  <line x1="531" y1="365" x2="531" y2="505" stroke="#94A3B8" stroke-width="2"/>
+                  <line x1="600" y1="365" x2="600" y2="505" stroke="#94A3B8" stroke-width="2"/>
+                  <line x1="668" y1="365" x2="668" y2="505" stroke="#94A3B8" stroke-width="2"/>
+                  <line x1="736" y1="365" x2="736" y2="505" stroke="#94A3B8" stroke-width="2"/>
+                  <!-- Pillows & Luxury Bedding -->
+                  <rect x="435" y="435" width="145" height="60" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+                  <rect x="620" y="435" width="145" height="60" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
+                  <rect x="360" y="490" width="480" height="115" rx="16" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+                  <rect x="360" y="540" width="480" height="75" rx="14" fill="#D6CFC2"/>
+                  <rect x="345" y="595" width="510" height="42" rx="10" fill="#334155"/>
+                  <!-- Floating Walnut Nightstands -->
+                  <rect x="275" y="495" width="75" height="45" rx="6" fill="#5C4028"/>
+                  <rect x="850" y="495" width="75" height="45" rx="6" fill="#5C4028"/>
+                </g>
+                <rect id="bedroom-lighting-overlay" x="0" y="0" width="1200" height="750" fill="#FEF08A" opacity="0.0" pointer-events="none" style="mix-blend-mode: multiply;"/>
+              </svg>
+
+              <!-- ======================================================= -->
+              <!-- SCENE 3: EXECUTIVE ARCHITECTURAL OFFICE / MEDICAL CLINIC 3D -->
+              <!-- ======================================================= -->
+              <svg id="svgScene-office" viewBox="0 0 1200 750" class="w-full h-full hidden" xmlns="http://www.w3.org/2000/svg">
+                <g onclick="setActive3DWall('ceiling')" class="cursor-pointer">
+                  <polygon id="office-ceiling" points="0,0 1200,0 970,130 230,130" fill="#F7F6F2" class="wall-transition"/>
+                  <polygon points="0,0 1200,0 970,130 230,130" fill="url(#giCeilingGrad)" pointer-events="none"/>
+                  <!-- Linear Architectural LED Office Troffers -->
+                  <rect x="360" y="45" width="180" height="12" rx="4" fill="#FFFBEB" stroke="#CBD5E1" stroke-width="2"/>
+                  <rect x="660" y="45" width="180" height="12" rx="4" fill="#FFFBEB" stroke="#CBD5E1" stroke-width="2"/>
+                </g>
+                <g onclick="setActive3DWall('side')" class="cursor-pointer">
+                  <polygon id="office-side-left" points="0,0 230,130 230,540 0,700" fill="#EAE6DF" class="wall-transition surface-paintable"/>
+                  <polygon points="0,0 230,130 230,540 0,700" fill="url(#giLeftWallGrad)" pointer-events="none"/>
+                  <polygon id="office-side-right" points="970,130 1200,0 1200,700 970,540" fill="#EAE6DF" class="wall-transition surface-paintable"/>
+                  <polygon points="970,130 1200,0 1200,700 970,540" fill="url(#giRightWallGrad)" pointer-events="none"/>
+                </g>
+                <g onclick="setActive3DWall('main')" class="cursor-pointer">
+                  <rect id="office-main" x="230" y="130" width="740" height="410" fill="#B5C7D3" class="wall-transition surface-paintable"/>
+                  <rect x="230" y="130" width="740" height="410" fill="url(#giMainWallVert)" pointer-events="none"/>
+                </g>
+                <g onclick="setActive3DWall('trim')" class="cursor-pointer">
+                  <rect id="office-trim-1" x="275" y="170" width="650" height="310" fill="none" stroke="#F7F6F2" stroke-width="6" class="wall-transition"/>
+                  <line id="office-trim-2" x1="480" y1="170" x2="480" y2="480" stroke="#F7F6F2" stroke-width="5" class="wall-transition"/>
+                  <line id="office-trim-3" x1="720" y1="170" x2="720" y2="480" stroke="#F7F6F2" stroke-width="5" class="wall-transition"/>
+                </g>
+                <!-- Polished Porcelain Floor -->
+                <polygon points="0,700 230,540 970,540 1200,700 1200,750 0,750" fill="#E2E8F0" pointer-events="none"/>
+                <!-- Executive Desk, Chairs & Shelving -->
+                <g pointer-events="none" filter="url(#aoShadowStrong)">
+                  <!-- Built-in Bookcase on Left -->
+                  <rect x="300" y="200" width="150" height="260" rx="4" fill="#334155" opacity="0.88"/>
+                  <line x1="300" y1="265" x2="450" y2="265" stroke="#D4AF37" stroke-width="3"/>
+                  <line x1="300" y1="330" x2="450" y2="330" stroke="#D4AF37" stroke-width="3"/>
+                  <line x1="300" y1="395" x2="450" y2="395" stroke="#D4AF37" stroke-width="3"/>
+                  <!-- Executive High-Back Chair -->
+                  <rect x="555" y="375" width="90" height="135" rx="16" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+                  <!-- Modern Architectural Desk -->
+                  <polygon points="360,515 840,515 880,540 320,540" fill="#5C4028"/>
+                  <rect x="350" y="538" width="500" height="92" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+                  <rect x="420" y="555" width="360" height="55" rx="4" fill="#6E4E32"/>
+                  <!-- iMac / Monitor on Desk -->
+                  <rect x="560" y="445" width="80" height="52" rx="4" fill="#0F172A" stroke="#CBD5E1" stroke-width="2"/>
+                  <polygon points="590,497 610,497 618,515 582,515" fill="#94A3B8"/>
+                </g>
+                <rect id="office-lighting-overlay" x="0" y="0" width="1200" height="750" fill="#FEF08A" opacity="0.0" pointer-events="none" style="mix-blend-mode: multiply;"/>
+              </svg>
+
+              <!-- ======================================================= -->
+              <!-- SCENE 4: MODERN SAUDI VILLA ARCHITECTURAL ELEVATION 3D  -->
+              <!-- ======================================================= -->
+              <svg id="svgScene-villa" viewBox="0 0 1200 750" class="w-full h-full hidden" xmlns="http://www.w3.org/2000/svg">
+                <!-- Sky & Architectural Forecourt -->
+                <rect x="0" y="0" width="1200" height="560" fill="#E0F2FE"/>
+                <rect x="0" y="560" width="1200" height="190" fill="#CBD5E1"/>
+                <polygon points="350,560 850,560 1050,750 150,750" fill="#94A3B8"/>
+
+                <!-- Cantilevered Roof Slab & Upper Fascia (D) -->
+                <g onclick="setActive3DWall('ceiling')" class="cursor-pointer">
+                  <polygon id="villa-ceiling" points="140,85 1060,85 1040,125 160,125" fill="#F7F6F2" stroke="#94A3B8" stroke-width="2" class="wall-transition"/>
+                  <!-- Exterior Hidden Linear LED Strip under Roof Cantilever -->
+                  <line x1="175" y1="126" x2="1025" y2="126" stroke="#FDE047" stroke-width="4" pointer-events="none"/>
+                </g>
+
+                <!-- Recessed Left & Right Architectural Wings (B) -->
+                <g onclick="setActive3DWall('side')" class="cursor-pointer">
+                  <rect id="villa-side-left" x="175" y="125" width="255" height="435" fill="#EAE6DF" stroke="#CBD5E1" stroke-width="2" class="wall-transition surface-paintable"/>
+                  <rect id="villa-side-right" x="770" y="125" width="255" height="435" fill="#EAE6DF" stroke="#CBD5E1" stroke-width="2" class="wall-transition surface-paintable"/>
+                </g>
+
+                <!-- Protruding Central Double-Height Villa Volume (A) -->
+                <g onclick="setActive3DWall('main')" class="cursor-pointer" filter="url(#aoShadowStrong)">
+                  <rect id="villa-main" x="405" y="105" width="390" height="455" fill="#C9B8A3" class="wall-transition surface-paintable"/>
+                  <ellipse cx="490" cy="200" rx="70" ry="120" fill="url(#iesConeGrad)" pointer-events="none"/>
+                  <ellipse cx="710" cy="200" rx="70" ry="120" fill="url(#iesConeGrad)" pointer-events="none"/>
+                </g>
+
+                <!-- Architectural L-Frames, Columns & Horizontal Banding (C) -->
+                <g onclick="setActive3DWall('trim')" class="cursor-pointer">
+                  <rect id="villa-trim-1" x="405" y="105" width="28" height="455" fill="#F7F6F2" class="wall-transition"/>
+                  <rect id="villa-trim-2" x="767" y="105" width="28" height="455" fill="#F7F6F2" class="wall-transition"/>
+                  <rect id="villa-trim-3" x="395" y="318" width="410" height="22" fill="#F7F6F2" class="wall-transition"/>
+                </g>
+
+                <!-- Glazing, Louvers, Pivot Door & Landscaping -->
+                <g pointer-events="none">
+                  <rect x="230" y="175" width="140" height="115" rx="4" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/>
+                  <rect x="485" y="155" width="230" height="145" rx="4" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/>
+                  <rect x="830" y="175" width="140" height="115" rx="4" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/>
+                  <rect x="445" y="275" width="310" height="43" fill="#BAE6FD" opacity="0.45" stroke="#FFFFFF" stroke-width="2"/>
+                  <rect x="230" y="365" width="140" height="135" rx="4" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/>
+                  <rect x="830" y="365" width="140" height="135" rx="4" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/>
+                  <!-- Luxury Tall Pivot Entrance Door -->
+                  <rect x="530" y="360" width="140" height="200" rx="4" fill="#5C4028" stroke="#D4AF37" stroke-width="4"/>
+                  <line x1="642" y1="395" x2="642" y2="515" stroke="#D4AF37" stroke-width="5"/>
+                  <!-- Landscape Trees -->
+                  <circle cx="115" cy="510" r="55" fill="#15803D"/>
+                  <circle cx="1085" cy="510" r="55" fill="#15803D"/>
+                </g>
+                <rect id="villa-lighting-overlay" x="0" y="0" width="1200" height="750" fill="#FEF08A" opacity="0.0" pointer-events="none" style="mix-blend-mode: multiply;"/>
+              </svg>
+
+              <!-- Floating Engineering Status HUD Top-Start -->
+              <div class="absolute top-3 start-3 bg-slate-900/90 backdrop-blur-xs text-white px-3.5 py-2 rounded-2xl shadow-lg border border-amber-400/40 flex items-center gap-2.5 pointer-events-none">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <div>
+                  <span id="active3DTargetBadge" class="text-[11px] font-black text-amber-300 block">السطح المحدد للتلوين: الجدار الرئيسي (A)</span>
+                  <span id="active3DFinishBadge" class="text-[10px] text-slate-300 font-semibold block">الملمس: فينوماستيك غني مطفي | الإضاءة: نهارية 5500K</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Interactive Split Compare Slider Bar (يظهر عند تفعيل وضع المقارنة بين لونين) -->
+            <div id="splitCompareControlBar" class="hidden bg-slate-900 text-white px-4 py-2.5 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <span class="font-black text-amber-300">⚖️ اسحب المؤشر لمقارنة اللونين على الجدار الرئيسي (قبل / بعد):</span>
+              <input type="range" id="splitCompareRange" min="20" max="80" value="50" oninput="updateSplitComparePos(this.value)" class="flex-1 max-w-xs accent-amber-400 cursor-pointer">
+              <span id="compareColorBLabel" class="font-mono text-[11px] bg-white/10 px-2.5 py-1 rounded">اللون المقارن: 12075 Soothing Beige</span>
+            </div>
+          </div>
+
+          <!-- =============================================================== -->
+          <!-- ENGINEERING DIMENSIONS & WALL-BY-WALL PAINT QUANTITY SCHEDULE   -->
+          <!-- =============================================================== -->
+          <div class="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-xs space-y-3.5">
+
+            <!-- Row 1: Room Engineering Dimensions Input + 3D Camera Orbit Controls -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 pb-3 border-b border-slate-100 items-center">
+              <div class="md:col-span-7 flex flex-wrap items-center gap-2">
+                <span class="text-xs font-black text-jotunBlue">📐 أبعاد الغرفة الهندسية (متر):</span>
+                <label class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200 text-xs font-bold">
+                  <span class="text-slate-500">العرض:</span>
+                  <input type="number" id="engRoomW" value="5.0" step="0.5" min="2" max="25" oninput="recalc3DEngineeringSchedule()" class="w-12 text-center font-black text-jotunBlue bg-transparent focus:outline-none">
+                  <span class="text-[10px] text-slate-400">م</span>
+                </label>
+                <label class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200 text-xs font-bold">
+                  <span class="text-slate-500">الطول:</span>
+                  <input type="number" id="engRoomL" value="4.5" step="0.5" min="2" max="25" oninput="recalc3DEngineeringSchedule()" class="w-12 text-center font-black text-jotunBlue bg-transparent focus:outline-none">
+                  <span class="text-[10px] text-slate-400">م</span>
+                </label>
+                <label class="flex items-center gap-1 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200 text-xs font-bold">
+                  <span class="text-slate-500">الارتفاع:</span>
+                  <input type="number" id="engRoomH" value="3.0" step="0.2" min="2.4" max="8" oninput="recalc3DEngineeringSchedule()" class="w-12 text-center font-black text-jotunBlue bg-transparent focus:outline-none">
+                  <span class="text-[10px] text-slate-400">م</span>
+                </label>
+              </div>
+
+              <!-- 3D Camera Perspective Tilt & Zoom -->
+              <div class="md:col-span-5 flex items-center justify-end gap-2">
+                <span class="text-[11px] font-black text-slate-600 shrink-0">🔄 زاوية 3D:</span>
+                <input type="range" id="tilt3DSlider" min="-14" max="14" value="0" oninput="update3DPerspectiveTilt(this.value)" class="w-28 accent-jotunBlue cursor-pointer">
+                <button type="button" onclick="reset3DTilt()" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 cursor-pointer">ضبط</button>
+              </div>
+            </div>
+
+            <!-- Row 2: Live Engineering Schedule Table (جدول الكميات الهندسي لكل سطح بمعادلة 9 م²/لتر) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <div onclick="setActive3DWall('main')" class="cursor-pointer p-2.5 rounded-xl bg-slate-50 border-2 border-amber-300 flex flex-col justify-between gap-1.5 hover:shadow-xs transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-black text-jotunBlue bg-amber-100 px-1.5 py-0.5 rounded">سطح A: الرئيسي</span>
+                  <span id="engArea-main" class="text-[10px] font-mono font-bold text-emerald-700">15.0 م² (4 لتر)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="swatchSum-main" class="w-6 h-6 rounded-lg border border-black/15 shrink-0" style="background-color: #B5C7D3;"></span>
+                  <span id="labelSum-main" class="text-[11px] font-black text-slate-900 truncate">5504 Blue Breeze</span>
+                </div>
+              </div>
+
+              <div onclick="setActive3DWall('side')" class="cursor-pointer p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-1.5 hover:border-jotunBlue transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-black text-slate-600 bg-slate-200/70 px-1.5 py-0.5 rounded">سطح B: الجانبي</span>
+                  <span id="engArea-side" class="text-[10px] font-mono font-bold text-emerald-700">27.0 م² (6 لتر)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="swatchSum-side" class="w-6 h-6 rounded-lg border border-black/15 shrink-0" style="background-color: #EAE6DF;"></span>
+                  <span id="labelSum-side" class="text-[11px] font-black text-slate-900 truncate">1622 Reflection</span>
+                </div>
+              </div>
+
+              <div onclick="setActive3DWall('trim')" class="cursor-pointer p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-1.5 hover:border-jotunBlue transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-black text-slate-600 bg-slate-200/70 px-1.5 py-0.5 rounded">سطح C: البانوهات</span>
+                  <span id="engArea-trim" class="text-[10px] font-mono font-bold text-emerald-700">4.5 م² (1 لتر)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="swatchSum-trim" class="w-6 h-6 rounded-lg border border-black/15 shrink-0" style="background-color: #F7F6F2;"></span>
+                  <span id="labelSum-trim" class="text-[11px] font-black text-slate-900 truncate">9918 Classic White</span>
+                </div>
+              </div>
+
+              <div onclick="setActive3DWall('ceiling')" class="cursor-pointer p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between gap-1.5 hover:border-jotunBlue transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-black text-slate-600 bg-slate-200/70 px-1.5 py-0.5 rounded">سطح D: السقف</span>
+                  <span id="engArea-ceiling" class="text-[10px] font-mono font-bold text-emerald-700">22.5 م² (5 لتر)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="swatchSum-ceiling" class="w-6 h-6 rounded-lg border border-black/15 shrink-0" style="background-color: #F7F6F2;"></span>
+                  <span id="labelSum-ceiling" class="text-[11px] font-black text-slate-900 truncate">9918 Classic White</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Export & Order Custom 3D Engineering Sheet Buttons -->
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <button type="button" onclick="send3DRoomToWhatsApp()" class="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2">
+                <span>💬 اعتماد وطلب جدول الكميات والألوان 3D عبر واتساب</span>
+              </button>
+              <button type="button" onclick="download3DRoomSnapshot()" class="py-2.5 px-4 rounded-xl bg-jotunBlue hover:bg-slate-900 text-white font-black text-xs sm:text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                <span>📸 تصدير اللوحة الهندسية 3D (PNG)</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- LEFT / END COLUMN (4 Cols on LG): COLOR PALETTE & HARMONIES     -->
+        <!-- =============================================================== -->
+        <div class="lg:col-span-4 bg-white rounded-3xl p-4 sm:p-5 border-2 border-amber-200 shadow-lg space-y-4">
+          <div class="border-b border-slate-100 pb-3">
+            <span class="text-[11px] font-black text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">مكتبة جوتن الهندسية (188 درجة)</span>
+            <h3 class="text-base sm:text-lg font-black text-slate-900 mt-1">اختر اللون لتطبيقه فوراً على السطح المحدد</h3>
+          </div>
+
+          <!-- Ready-Made Architectural Harmonies -->
+          <div class="space-y-1.5">
+            <span class="text-xs font-black text-slate-700 block">✨ باقات تنسيق معمارية معتمدة بضغطة واحدة:</span>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button type="button" onclick="apply3DHarmonyPreset('#C8B9A6', '12075 Soothing Beige', '#EAE6DF', '1622 Reflection', '#F7F6F2', '9918 Classic White')" class="p-2 rounded-xl border border-slate-200 hover:border-jotunBlue bg-slate-50/70 flex items-center gap-2 text-start transition-all cursor-pointer">
+                <div class="flex -space-x-1.5 rtl:space-x-reverse shrink-0">
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#C8B9A6"></span>
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#EAE6DF"></span>
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#F7F6F2"></span>
+                </div>
+                <span class="text-[11px] font-extrabold text-slate-800 truncate">بيج معماري دافئ</span>
+              </button>
+
+              <button type="button" onclick="apply3DHarmonyPreset('#8FA399', '7628 Treasure', '#E9E6DF', '1024 Timeless', '#F7F6F2', '9918 Classic White')" class="p-2 rounded-xl border border-slate-200 hover:border-jotunBlue bg-slate-50/70 flex items-center gap-2 text-start transition-all cursor-pointer">
+                <div class="flex -space-x-1.5 rtl:space-x-reverse shrink-0">
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#8FA399"></span>
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#E9E6DF"></span>
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#F7F6F2"></span>
+                </div>
+                <span class="text-[11px] font-extrabold text-slate-800 truncate">أخضر سكون وتناغم</span>
+              </button>
+
+              <button type="button" onclick="apply3DHarmonyPreset('#7C92A6', '4618 Evening Sky', '#EDEAE4', '1624 Skylight', '#F7F6F2', '9918 Classic White')" class="p-2 rounded-xl border border-slate-200 hover:border-jotunBlue bg-slate-50/70 flex items-center gap-2 text-start transition-all cursor-pointer">
+                <div class="flex -space-x-1.5 rtl:space-x-reverse shrink-0">
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#7C92A6"></span>
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#EDEAE4"></span>
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#F7F6F2"></span>
+                </div>
+                <span class="text-[11px] font-extrabold text-slate-800 truncate">أزرق ملكي وسكاي</span>
+              </button>
+
+              <button type="button" onclick="apply3DHarmonyPreset('#B88B72', '2024 Senses', '#F1ECE1', '1001 Egg White', '#F7F6F2', '9918 Classic White')" class="p-2 rounded-xl border border-slate-200 hover:border-jotunBlue bg-slate-50/70 flex items-center gap-2 text-start transition-all cursor-pointer">
+                <div class="flex -space-x-1.5 rtl:space-x-reverse shrink-0">
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#B88B72"></span>
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#F1ECE1"></span>
+                  <span class="w-4 h-4 rounded-full border border-white" style="background:#F7F6F2"></span>
+                </div>
+                <span class="text-[11px] font-extrabold text-slate-800 truncate">تيراكوتا عصري</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter by Interior (Fenomastic) / Exterior (Jotashield) inside 3D Studio -->
+          <div class="space-y-2 pt-1 border-t border-slate-100">
+            <input type="text" id="room3DColorSearch" oninput="render3DStudioSwatches()" placeholder="🔍 ابحث برقم الكود (مثل 9918 أو 1024 أو 1624)..." class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-jotunBlue focus:outline-none text-xs font-bold bg-slate-50">
+            <div class="flex flex-wrap gap-1">
+              <button type="button" onclick="set3DStudioCatFilter('all')" id="r3dCat-all" class="r3d-cat-btn px-2 py-1 rounded-lg text-[10px] font-black bg-jotunBlue text-white cursor-pointer">الكل (188)</button>
+              <button type="button" onclick="set3DStudioCatFilter('card_128')" id="r3dCat-card_128" class="r3d-cat-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">🏠 فينوماستيك 128</button>
+              <button type="button" onclick="set3DStudioCatFilter('Nuances 2025')" id="r3dCat-Nuances 2025" class="r3d-cat-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">🌟 تناغم 2025</button>
+              <button type="button" onclick="set3DStudioCatFilter('Spaces 2026')" id="r3dCat-Spaces 2026" class="r3d-cat-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">🌿 مساحات 2026</button>
+              <button type="button" onclick="set3DStudioCatFilter('exterior')" id="r3dCat-exterior" class="r3d-cat-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">🏛️ جوتاشيلد خارجي</button>
+            </div>
+          </div>
+
+          <!-- Scrollable Swatch Grid for 3D Studio -->
+          <div id="room3DSwatchesGrid" class="max-h-[360px] overflow-y-auto pr-1 grid grid-cols-3 gap-2">
+            <!-- Populated by render3DStudioSwatches() -->
+          </div>
+
         </div>
 
       </div>
@@ -2720,7 +3497,10 @@
           </div>
 
           <!-- Quick Actions -->
-          <div class="flex items-center gap-2 shrink-0">
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button type="button" onclick="applyColorTo3DRoomFromDirectory('${c.code}')" class="flex-1 sm:flex-initial px-3 py-2 rounded-xl bg-jotunYellow hover:bg-amber-400 text-jotunBlue text-xs font-black shadow-xs transition-colors cursor-pointer">
+              🏠 جرب اللون في الغرفة 3D
+            </button>
             <button type="button" onclick="copyColorCode('${c.code}', '${name}')" class="flex-1 sm:flex-initial px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black transition-colors cursor-pointer">
               ${copyText}
             </button>
@@ -3737,7 +4517,445 @@
       videoEl.play().catch(() => {});
     }
 
+
+    // =========================================================================
+    // استوديو التصميم الهندسي والمعماري ثلاثي الأبعاد المتقدم (Advanced 3D BIM & CAD Visualizer)
+    // =========================================================================
+    let current3DScene = 'living';
+    let current3DWallTarget = 'main'; // 'main', 'side', 'trim', 'ceiling', 'all'
+    let current3DStudioCat = 'all';
+    let current3DLighting = 'day';
+    let current3DFinish = 'matt';
+    let cadOverlayVisible = true;
+    let splitCompareActive = false;
+
+    const room3DState = {
+      main: { hex: '#B5C7D3', label: 'JOTUN 5504 Blue Breeze' },
+      side: { hex: '#EAE6DF', label: 'JOTUN 1622 Reflection' },
+      trim: { hex: '#F7F6F2', label: 'JOTUN 9918 Classic White' },
+      ceiling: { hex: '#F7F6F2', label: 'JOTUN 9918 Classic White' },
+      compareB: { hex: '#C8B9A6', label: 'JOTUN 12075 Soothing Beige' }
+    };
+
+    function set3DScene(sceneId) {
+      current3DScene = sceneId;
+      ['living', 'bedroom', 'office', 'villa'].forEach(s => {
+        const svgEl = document.getElementById('svgScene-' + s);
+        const btnEl = document.getElementById('sceneBtn-' + s);
+        if (svgEl) {
+          if (s === sceneId) svgEl.classList.remove('hidden');
+          else svgEl.classList.add('hidden');
+        }
+        if (btnEl) {
+          if (s === sceneId) {
+            btnEl.className = 'px-3 py-1.5 rounded-xl text-xs font-black bg-jotunBlue text-white shadow-xs transition-all cursor-pointer';
+          } else {
+            btnEl.className = 'px-3 py-1.5 rounded-xl text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all cursor-pointer';
+          }
+        }
+      });
+      if (sceneId === 'villa') {
+        set3DStudioCatFilter('exterior');
+        const finSel = document.getElementById('paintFinishSelect');
+        if (finSel) {
+          finSel.value = 'tex';
+          set3DPaintFinish('tex');
+        }
+      }
+      applyCurrent3DStateToSVGs();
+    }
+
+    function toggleCADOverlay() {
+      cadOverlayVisible = !cadOverlayVisible;
+      const cadGroup = document.getElementById('cadOverlay-living');
+      const btn = document.getElementById('cadToggleBtn');
+      if (cadGroup) {
+        if (cadOverlayVisible) cadGroup.classList.remove('hidden');
+        else cadGroup.classList.add('hidden');
+      }
+      if (btn) {
+        btn.innerHTML = cadOverlayVisible
+          ? '<span>📏 الأبعاد الهندسية (CAD): مفعّل</span>'
+          : '<span>📏 الأبعاد الهندسية (CAD): مخفي</span>';
+        btn.className = cadOverlayVisible
+          ? 'px-3 py-1.5 rounded-xl text-xs font-black bg-amber-100 text-jotunBlue border border-amber-300 transition-all cursor-pointer flex items-center gap-1'
+          : 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 border border-slate-300 transition-all cursor-pointer flex items-center gap-1';
+      }
+    }
+
+    function toggleSplitCompareMode() {
+      splitCompareActive = !splitCompareActive;
+      const compGroup = document.getElementById('living-compare-group');
+      const compLine = document.getElementById('splitCompareDividerLine');
+      const compBar = document.getElementById('splitCompareControlBar');
+      const btn = document.getElementById('splitCompareBtn');
+
+      if (compGroup && compLine && compBar) {
+        if (splitCompareActive) {
+          set3DScene('living');
+          compGroup.classList.remove('hidden');
+          compLine.classList.remove('hidden');
+          compBar.classList.remove('hidden');
+          showToast('⚖️ تم تفعيل وضع المقارنة النصفية: اضغط على أي لون لتجربته وحرّك المؤشر للمقارنة!');
+        } else {
+          compGroup.classList.add('hidden');
+          compLine.classList.add('hidden');
+          compBar.classList.add('hidden');
+        }
+      }
+      if (btn) {
+        btn.className = splitCompareActive
+          ? 'px-3 py-1.5 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-xs transition-all cursor-pointer flex items-center gap-1'
+          : 'px-3 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 transition-all cursor-pointer flex items-center gap-1';
+      }
+    }
+
+    function updateSplitComparePos(pctVal) {
+      const pct = parseFloat(pctVal) || 50;
+      const xPos = Math.round((pct / 100) * 1200);
+      const rect = document.getElementById('splitClipRect');
+      const line = document.getElementById('svgSplitLine');
+      const handle = document.getElementById('svgSplitHandle');
+      const txt = document.getElementById('svgSplitHandleTxt');
+      if (rect) rect.setAttribute('width', xPos);
+      if (line) {
+        line.setAttribute('x1', xPos);
+        line.setAttribute('x2', xPos);
+      }
+      if (handle) handle.setAttribute('cx', xPos);
+      if (txt) txt.setAttribute('x', xPos);
+    }
+
+    function set3DPaintFinish(finishType) {
+      current3DFinish = finishType;
+      const silkEl = document.getElementById('living-silk-sheen');
+      if (silkEl) {
+        silkEl.setAttribute('opacity', finishType === 'silk' ? '0.9' : '0.0');
+      }
+      document.querySelectorAll('.surface-paintable').forEach(el => {
+        if (finishType === 'tex') {
+          el.setAttribute('filter', 'url(#texFilter-tex)');
+        } else if (finishType === 'kanva') {
+          el.setAttribute('filter', 'url(#texFilter-kanva)');
+        } else {
+          el.removeAttribute('filter');
+        }
+      });
+      updateEngineeringHudBadge();
+    }
+
+    function set3DLighting(mode) {
+      current3DLighting = mode;
+      ['day', 'warm', 'night'].forEach(m => {
+        const btn = document.getElementById('lightBtn-' + m);
+        if (btn) {
+          btn.className = (m === mode)
+            ? 'px-2 py-1 rounded-md text-[10px] font-black bg-amber-400 text-jotunBlue cursor-pointer'
+            : 'px-2 py-1 rounded-md text-[10px] font-bold text-slate-600 cursor-pointer';
+        }
+      });
+
+      ['living', 'bedroom', 'office', 'villa'].forEach(s => {
+        const ov = document.getElementById(s + '-lighting-overlay');
+        if (!ov) return;
+        if (mode === 'day') {
+          ov.setAttribute('fill', '#FFFFFF');
+          ov.setAttribute('opacity', '0.0');
+        } else if (mode === 'warm') {
+          ov.setAttribute('fill', '#FDE68A');
+          ov.setAttribute('opacity', '0.24');
+        } else if (mode === 'night') {
+          ov.setAttribute('fill', '#1E293B');
+          ov.setAttribute('opacity', '0.36');
+        }
+      });
+      updateEngineeringHudBadge();
+    }
+
+    function updateEngineeringHudBadge() {
+      const finishNames = {
+        matt: 'فينوماستيك غني مطفي',
+        silk: 'فينوماستيك ناعم حريري',
+        tex: 'جوتاشيلد تيكس رشة بارزة',
+        kanva: 'جوتاشيلد كانڤا ملمس صخري'
+      };
+      const lightNames = {
+        day: 'نهارية 5500K',
+        warm: 'دافئة 3000K',
+        night: 'مسائية سبوت لايت'
+      };
+      const b = document.getElementById('active3DFinishBadge');
+      if (b) {
+        b.textContent = `الملمس: ${finishNames[current3DFinish] || ''} | الإضاءة: ${lightNames[current3DLighting] || ''}`;
+      }
+    }
+
+    function setActive3DWall(target) {
+      current3DWallTarget = target;
+      const labels = {
+        main: 'الجدار الرئيسي (سطح A)',
+        side: 'الجدران الجانبية (سطح B)',
+        trim: 'البانوهات والكرانيش (سطح C)',
+        ceiling: 'السقف والجبس (سطح D)',
+        all: 'تلوين الغرفة بالكامل'
+      };
+      const badge = document.getElementById('active3DTargetBadge');
+      if (badge) {
+        badge.textContent = 'السطح المحدد للتلوين: ' + (labels[target] || target);
+      }
+      ['main', 'side', 'trim', 'ceiling', 'all'].forEach(t => {
+        const btn = document.getElementById('wallBtn-' + t);
+        if (!btn) return;
+        if (t === target) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-black bg-jotunBlue text-white shadow-2xs transition-all cursor-pointer ring-2 ring-amber-300';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition-all cursor-pointer';
+        }
+      });
+    }
+
+    function applyColorTo3DWall(hex, code, nameAr) {
+      const fullLabel = `${code.replace('JOTUN ', '')} ${nameAr}`;
+      if (splitCompareActive) {
+        // When Split Compare is active, store previous main color in compareB so user compares old vs new!
+        room3DState.compareB = { hex: room3DState.main.hex, label: room3DState.main.label };
+      }
+      if (current3DWallTarget === 'all') {
+        room3DState.main = { hex, label: fullLabel };
+        room3DState.side = { hex, label: fullLabel };
+      } else {
+        room3DState[current3DWallTarget] = { hex, label: fullLabel };
+      }
+      applyCurrent3DStateToSVGs();
+      showToast(`🎨 تم تطبيق ${fullLabel} على المخطط ثلاثي الأبعاد`);
+    }
+
+    function applyCurrent3DStateToSVGs() {
+      // Scene 1: Living room
+      ['living-main', 'bedroom-main', 'office-main', 'villa-main'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('fill', room3DState.main.hex);
+      });
+      ['living-side-left', 'living-side-right', 'bedroom-side-left', 'bedroom-side-right', 'office-side-left', 'office-side-right', 'villa-side-left', 'villa-side-right'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('fill', room3DState.side.hex);
+      });
+      ['living-trim-1', 'living-trim-2', 'living-trim-3', 'bedroom-trim-1', 'bedroom-trim-2', 'bedroom-trim-3', 'office-trim-1', 'office-trim-2', 'office-trim-3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('stroke', room3DState.trim.hex);
+      });
+      ['living-trim-crown', 'living-trim-base', 'living-trim-base-l', 'living-trim-base-r', 'villa-trim-1', 'villa-trim-2', 'villa-trim-3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('fill', room3DState.trim.hex);
+      });
+      ['living-ceiling', 'living-ceiling-inner', 'bedroom-ceiling', 'office-ceiling', 'villa-ceiling'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('fill', room3DState.ceiling.hex);
+      });
+
+      // Compare layer
+      const compMain = document.getElementById('living-main-compare');
+      const compSide = document.getElementById('living-side-left-compare');
+      const compLbl = document.getElementById('compareColorBLabel');
+      if (compMain) compMain.setAttribute('fill', room3DState.compareB.hex);
+      if (compSide) compSide.setAttribute('fill', room3DState.compareB.hex);
+      if (compLbl) compLbl.textContent = 'اللون المقارن: ' + room3DState.compareB.label;
+
+      // Update Summary Bar
+      ['main', 'side', 'trim', 'ceiling'].forEach(k => {
+        const sw = document.getElementById('swatchSum-' + k);
+        const lb = document.getElementById('labelSum-' + k);
+        if (sw) sw.style.backgroundColor = room3DState[k].hex;
+        if (lb) lb.textContent = room3DState[k].label;
+      });
+
+      recalc3DEngineeringSchedule();
+    }
+
+    // حساب هندسي فوري للمساحات واللترات لكل جدار في الغرفة 3D وفق معادلة (اللتر = 9 م² لطبقتين)
+    function recalc3DEngineeringSchedule() {
+      const w = parseFloat(document.getElementById('engRoomW')?.value) || 5.0;
+      const l = parseFloat(document.getElementById('engRoomL')?.value) || 4.5;
+      const h = parseFloat(document.getElementById('engRoomH')?.value) || 3.0;
+
+      const mainArea = w * h;
+      const sideArea = 2 * (l * h) * 0.85; // after window/door deduction
+      const trimArea = (w + 2 * l) * 0.35;
+      const ceilArea = w * l;
+
+      // 2 coats using 1 Liter = 9 m² formula
+      const mainLiters = Math.max(1, Math.ceil((mainArea * 2) / 9.0));
+      const sideLiters = Math.max(1, Math.ceil((sideArea * 2) / 9.0));
+      const trimLiters = Math.max(1, Math.ceil((trimArea * 2) / 9.0));
+      const ceilLiters = Math.max(1, Math.ceil((ceilArea * 2) / 9.0));
+
+      const elMain = document.getElementById('engArea-main');
+      const elSide = document.getElementById('engArea-side');
+      const elTrim = document.getElementById('engArea-trim');
+      const elCeil = document.getElementById('engArea-ceiling');
+
+      if (elMain) elMain.textContent = `${mainArea.toFixed(1)} م² (${mainLiters} لتر)`;
+      if (elSide) elSide.textContent = `${sideArea.toFixed(1)} م² (${sideLiters} لتر)`;
+      if (elTrim) elTrim.textContent = `${trimArea.toFixed(1)} م² (${trimLiters} لتر)`;
+      if (elCeil) elCeil.textContent = `${ceilArea.toFixed(1)} م² (${ceilLiters} لتر)`;
+
+      // Update CAD Dimension Labels on the 3D Viewport
+      const cadW = document.getElementById('cadText-width');
+      const cadH = document.getElementById('cadText-height');
+      if (cadW) cadW.textContent = `L = ${w.toFixed(2)}m (المساحة: ${mainArea.toFixed(1)} م²)`;
+      if (cadH) cadH.textContent = `H = ${h.toFixed(2)}m`;
+    }
+
+    function apply3DHarmonyPreset(mainHex, mainLbl, sideHex, sideLbl, trimHex, trimLbl) {
+      room3DState.main = { hex: mainHex, label: mainLbl };
+      room3DState.side = { hex: sideHex, label: sideLbl };
+      room3DState.trim = { hex: trimHex, label: trimLbl };
+      room3DState.ceiling = { hex: trimHex, label: trimLbl };
+      applyCurrent3DStateToSVGs();
+      showToast('✨ تم تطبيق الباقة المعمارية المتكاملة على المخطط 3D!');
+    }
+
+    function update3DPerspectiveTilt(degVal) {
+      const vp = document.getElementById('room3DViewport');
+      if (!vp) return;
+      const deg = parseFloat(degVal) || 0;
+      vp.style.transform = `rotateY(${deg}deg) rotateX(${Math.abs(deg) * 0.15}deg) scale(1.01)`;
+    }
+
+    function reset3DTilt() {
+      const slider = document.getElementById('tilt3DSlider');
+      if (slider) slider.value = 0;
+      const vp = document.getElementById('room3DViewport');
+      if (vp) vp.style.transform = 'rotateY(0deg) rotateX(0deg) scale(1)';
+    }
+
+    function set3DStudioCatFilter(catKey) {
+      current3DStudioCat = catKey;
+      document.querySelectorAll('.r3d-cat-btn').forEach(btn => {
+        if (btn.id === 'r3dCat-' + catKey) {
+          btn.className = 'r3d-cat-btn px-2 py-1 rounded-lg text-[10px] font-black bg-jotunBlue text-white cursor-pointer';
+        } else {
+          btn.className = 'r3d-cat-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer';
+        }
+      });
+      render3DStudioSwatches();
+    }
+
+    function render3DStudioSwatches() {
+      const grid = document.getElementById('room3DSwatchesGrid');
+      if (!grid) return;
+      const q = (document.getElementById('room3DColorSearch')?.value || '').trim().toLowerCase();
+
+      let list = colorDirectory;
+      if (current3DStudioCat !== 'all') {
+        list = list.filter(c => c.cat === current3DStudioCat || c.type.includes(current3DStudioCat));
+      }
+      if (q) {
+        list = list.filter(c =>
+          c.code.toLowerCase().includes(q) ||
+          c.nameAr.toLowerCase().includes(q) ||
+          c.nameEn.toLowerCase().includes(q)
+        );
+      }
+
+      grid.innerHTML = list.map(c => {
+        const shortCode = c.code.replace('JOTUN ', '');
+        const safeAr = c.nameAr.replace(/'/g, "\'");
+        return `
+          <button type="button" onclick="applyColorTo3DWall('${c.hex}', '${c.code}', '${safeAr}')" class="group p-1.5 rounded-xl bg-white border border-slate-200 hover:border-jotunBlue hover:shadow-md transition-all flex flex-col items-stretch text-start cursor-pointer">
+            <div class="h-11 w-full rounded-lg border border-black/10 relative mb-1" style="background-color: ${c.hex};">
+              <span class="absolute bottom-0.5 end-1 bg-black/65 text-white text-[9px] font-mono font-bold px-1 rounded">${shortCode}</span>
+            </div>
+            <span class="text-[10px] font-black text-slate-800 truncate">${c.nameAr}</span>
+            <span class="text-[9px] text-slate-400 truncate">${c.nameEn}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function applyColorTo3DRoomFromDirectory(codeStr) {
+      const found = colorDirectory.find(c => c.code === codeStr);
+      if (!found) return;
+      applyColorTo3DWall(found.hex, found.code, found.nameAr);
+      const sec = document.getElementById('room-visualizer');
+      if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function send3DRoomToWhatsApp() {
+      const sceneNames = {
+        living: 'صالة فيلا مودرن 3D',
+        bedroom: 'جناح نوم فندقي 3D',
+        office: 'مكتب هندسي / عيادة 3D',
+        villa: 'واجهة فيلا جوتاشيلد 3D'
+      };
+      const w = document.getElementById('engRoomW')?.value || '5.0';
+      const l = document.getElementById('engRoomL')?.value || '4.5';
+      const h = document.getElementById('engRoomH')?.value || '3.0';
+      const mInfo = document.getElementById('engArea-main')?.textContent || '';
+      const sInfo = document.getElementById('engArea-side')?.textContent || '';
+      const cInfo = document.getElementById('engArea-ceiling')?.textContent || '';
+
+      const text = `السلام عليكم ورحمة الله،
+قمت بإعداد جدول الألوان والكميات عبر استوديو التصميم الهندسي ثلاثي الأبعاد (3D BIM) في موقع مؤسسة الصيوان التجارية:
+- المشهد المعماري: ${sceneNames[current3DScene]} (الأبعاد: ${w}م × ${l}م × ارتفاع ${h}م)
+- الجدار الرئيسي (A): ${room3DState.main.label} [${mInfo}]
+- الجدران الجانبية (B): ${room3DState.side.label} [${sInfo}]
+- البانوهات والكرانيش (C): ${room3DState.trim.label}
+- السقف والجبس (D): ${room3DState.ceiling.label} [${cInfo}]
+يرجى اعتماد الألوان وتزويدي بعرض السعر.`;
+      window.open('https://wa.me/966509559127?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    function download3DRoomSnapshot() {
+      const activeSvg = document.getElementById('svgScene-' + current3DScene);
+      if (!activeSvg) return;
+      showToast('📸 جاري تصدير اللوحة الهندسية ثلاثية الأبعاد مع جدول الأكواد والكميات...');
+      try {
+        const serializer = new XMLSerializer();
+        const svgStr = serializer.serializeToString(activeSvg);
+        const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 1200;
+          canvas.height = 840;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, 1200, 840);
+          ctx.drawImage(img, 0, 0, 1200, 750);
+          // Engineering Title Block at bottom
+          ctx.fillStyle = '#002855';
+          ctx.fillRect(0, 750, 1200, 90);
+          ctx.fillStyle = '#F5A800';
+          ctx.font = 'bold 19px Cairo, sans-serif';
+          ctx.fillText('مؤسسة الصيوان التجارية - موزع معتمد دهانات جوتن | اللوحة الهندسية لتنسيق الألوان (3D BIM)', 30, 785);
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = 'bold 15px Cairo, sans-serif';
+          ctx.fillText(`سطح A (الرئيسي): ${room3DState.main.label}  |  سطح B (الجانبي): ${room3DState.side.label}  |  سطح C (البانوهات): ${room3DState.trim.label}`, 30, 818);
+          canvas.toBlob(blob => {
+            if (blob) {
+              const dlUrl = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = dlUrl;
+              a.download = `AlSewan_Jotun_Engineering_3D_${current3DScene}.png`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              setTimeout(() => URL.revokeObjectURL(dlUrl), 3000);
+            }
+          }, 'image/png');
+          URL.revokeObjectURL(url);
+        };
+        img.src = url;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+      render3DStudioSwatches();
+      applyCurrent3DStateToSVGs();
       initCatalogPageDimensions();
       renderAllCatalogsDownloadCenter();
       initEmbeddedVideo();
